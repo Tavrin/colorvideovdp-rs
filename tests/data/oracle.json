@@ -1,0 +1,74 @@
+{
+  "reference_revision": "2a268bc",
+  "torch_version": "2.14.1+cpu",
+  "cases": [
+    {
+      "name": "standard_4k-image-compression",
+      "group": "generated images",
+      "display": "standard_4k",
+      "color": "sRGB",
+      "width": 16,
+      "height": 16,
+      "channels": 3,
+      "frames": 1,
+      "fps": 0,
+      "padding": "replicate",
+      "test": "standard_4k-image-compression-test.f32",
+      "reference": "standard_4k-image-compression-reference.f32",
+      "heatmap": "standard_4k-image-compression-map.f32",
+      "heatmap_f32": "standard_4k-image-compression-map-unquantized.f32",
+      "features": "standard_4k-image-compression-features.f32",
+      "jod": 8.836058616638184
+    },
+    {
+      "name": "color-18",
+      "group": "colour spaces",
+      "display": "custom",
+      "color": "BT.2020-PQ",
+      "width": 32,
+      "height": 32,
+      "channels": 3,
+      "frames": 1,
+      "fps": 0,
+      "padding": "replicate",
+      "test": "color-18-test.f32",
+      "reference": "color-18-reference.f32",
+      "heatmap": "color-18-map.f32",
+      "heatmap_f32": "color-18-map-unquantized.f32",
+      "features": "color-18-features.f32",
+      "custom_display": {
+        "custom": {
+          "resolution": [
+            1920,
+            1080
+          ],
+          "pixels_per_degree": 45,
+          "max_luminance": 1200,
+          "contrast": 10000,
+          "E_ambient": 25,
+          "k_refl": 0.01,
+          "exposure": 1.25
+        }
+      },
+      "jod": 8.616727828979492
+    },
+    {
+      "name": "padding-symmetric-29.97-8",
+      "group": "temporal edges",
+      "display": "standard_4k",
+      "color": "sRGB",
+      "width": 17,
+      "height": 16,
+      "channels": 3,
+      "frames": 8,
+      "fps": 29.97,
+      "padding": "symmetric",
+      "test": "padding-symmetric-29.97-8-test.f32",
+      "reference": "padding-symmetric-29.97-8-reference.f32",
+      "heatmap": "padding-symmetric-29.97-8-map.f32",
+      "heatmap_f32": "padding-symmetric-29.97-8-map-unquantized.f32",
+      "features": "padding-symmetric-29.97-8-features.f32",
+      "jod": 7.745632171630859
+    }
+  ]
+}
