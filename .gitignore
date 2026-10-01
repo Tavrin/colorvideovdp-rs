@@ -1,0 +1,8 @@
+/target/
+/parity/target/
+/parity/results/*
+!/parity/results/sweep.md
+/fuzz/target/
+/fuzz/artifacts/
+/fuzz/corpus/
+__pycache__/
