@@ -1,0 +1,43 @@
+[package]
+name = "colorvideovdp-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2021"
+
+[package.metadata]
+cargo-fuzz = true
+
+[features]
+fuzzing = ["dep:libfuzzer-sys"]
+
+[dependencies]
+colorvideovdp = { path = "..", default-features = false }
+libfuzzer-sys = { version = "0.4", optional = true }
+
+[[bin]]
+name = "hostile"
+path = "src/main.rs"
+
+[[bin]]
+name = "image_predict"
+path = "fuzz_targets/image_predict.rs"
+test = false
+doc = false
+bench = false
+required-features = ["fuzzing"]
+
+[[bin]]
+name = "video_predict"
+path = "fuzz_targets/video_predict.rs"
+test = false
+doc = false
+bench = false
+required-features = ["fuzzing"]
+
+[[bin]]
+name = "display_parse"
+path = "fuzz_targets/display_parse.rs"
+test = false
+doc = false
+bench = false
+required-features = ["fuzzing"]
