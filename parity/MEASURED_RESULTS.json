@@ -6,7 +6,7 @@
     "physical_cores": 16,
     "ram_gib": 30
   },
-  "compiler": "rustc 1.98.1",
+  "compiler": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
   "profile": "release",
   "heatmaps_in_benchmarks": false,
   "reference_revision": "2a268bc",
@@ -1696,22 +1696,22 @@
       {
         "name": "1080p-image",
         "execution": "SingleThread",
-        "milliseconds": 1149.939483,
+        "milliseconds": 944.3535370000001,
         "samples_ms": [
-          1149.939483,
-          1168.3360810000001,
-          1013.1295039999999
+          922.296979,
+          949.210684,
+          944.3535370000001
         ],
         "jod": 9.808819
       },
       {
         "name": "1080p-video-8-frames-30fps",
         "execution": "SingleThread",
-        "milliseconds": 11494.675484,
+        "milliseconds": 11245.947766000001,
         "samples_ms": [
-          11494.675484,
-          12377.242288,
-          11286.497578
+          12340.778658,
+          11245.947766000001,
+          10617.888390999999
         ],
         "jod": 7.414606
       }
@@ -1720,22 +1720,22 @@
       {
         "name": "1080p-image",
         "threads": 1,
-        "milliseconds": 4513.440430000628,
+        "milliseconds": 5414.939103000052,
         "samples_ms": [
-          4330.067550999956,
-          4513.440430000628,
-          6795.82309899979
+          5414.939103000052,
+          4316.4389880003,
+          5675.723642999856
         ],
         "jod": 9.808818817138672
       },
       {
         "name": "1080p-video-8-frames-30fps",
         "threads": 1,
-        "milliseconds": 32677.174808000018,
+        "milliseconds": 32015.976447999947,
         "samples_ms": [
-          32360.940489999848,
-          33784.84452199973,
-          32677.174808000018
+          34380.39217100004,
+          31473.661224999887,
+          32015.976447999947
         ],
         "jod": 7.414605617523193
       }
@@ -1744,22 +1744,22 @@
       {
         "name": "1080p-image",
         "execution": "Parallel",
-        "milliseconds": 194.527326,
+        "milliseconds": 336.021466,
         "samples_ms": [
-          194.527326,
-          194.130249,
-          202.124032
+          380.448281,
+          336.021466,
+          330.853027
         ],
         "jod": 9.808819
       },
       {
         "name": "1080p-video-8-frames-30fps",
         "execution": "Parallel",
-        "milliseconds": 2086.013715,
+        "milliseconds": 3411.548412,
         "samples_ms": [
-          2074.891334,
-          2086.013715,
-          2132.1126320000003
+          3305.654339,
+          3411.548412,
+          3434.2966600000004
         ],
         "jod": 7.414606
       }
@@ -1768,22 +1768,22 @@
       {
         "name": "1080p-image",
         "threads": 16,
-        "milliseconds": 809.615990000566,
+        "milliseconds": 851.7342069999359,
         "samples_ms": [
-          895.8221769999,
-          809.615990000566,
-          804.0256899994347
+          916.3789109998106,
+          851.7342069999359,
+          817.2976020000533
         ],
         "jod": 9.808818817138672
       },
       {
         "name": "1080p-video-8-frames-30fps",
         "threads": 16,
-        "milliseconds": 9201.243030999649,
+        "milliseconds": 9510.781529000269,
         "samples_ms": [
-          9041.352086000188,
-          9201.243030999649,
-          9265.890009999566
+          9661.02894300002,
+          9351.763259999643,
+          9510.781529000269
         ],
         "jod": 7.414605617523193
       }
@@ -1793,5 +1793,176 @@
     "1080p-image": 9.808818817138672,
     "1080p-video-8-frames-30fps": 7.414605617523193
   },
-  "qualification_status": "historical pre-hardening; Rust source and binary identity not captured"
+  "qualification_status": "benchmarks: current implementation measured on 2026-10-02 with Rust source and executable identities; parity: previous record retained; full record regeneration blocked because corpus and benchmark source snapshots differ in Cargo.toml; corpus not rerun",
+  "rust_measurements": {
+    "benchmark_single": {
+      "source_sha256": "2df15cef44eb16ce57fd5ffd75203695571a77745a1f8416b0a1320bb02365a2",
+      "files_sha256": {
+        "Cargo.toml": "eac134d08b4e6f80311264d7103f0fc833f7c4f091d6f44ef019c9b2d5bfceb2",
+        "Cargo.lock": "14b52d5a8cb9695db498df402b43f130bf61f19b60b4cb0c4348aa6d8c908e40",
+        "parity/Cargo.toml": "6808dc247bf2d8f5ce4f7956d05a5d474561edad0941d12a8868333e4d35a88e",
+        "parity/Cargo.lock": "d03943a7ed57448dde967e35ec272586da51802e1f9e24306a227f872b5b8393",
+        "src/allocation.rs": "cb4098b9b8309fa99cb12facca7564741cec4b9d02586c0a385d69bf6b0cbd4e",
+        "src/color.rs": "6c7b485a634308d5b6078f70364cd1836db558e29c8df4a897cf1fea15f41437",
+        "src/csf.rs": "c974931e75194e2f19977393fc812aa4ece85041f62f484527aca63d98e88fce",
+        "src/display.rs": "ac19a151deff9dc6aee356b52aa119a0a5473c3ea79640c03a52efb9f4dd1074",
+        "src/error.rs": "90f04d905eec4b2bae3e826468ad12e285698b98eaffa07f96c793443f3d24e7",
+        "src/image.rs": "a67d9d6f09011c05b33ce95abf22350cb9dbd36a51f64ee76cb614ab652845f1",
+        "src/lib.rs": "be611efaefa599a5a3b2865a53645ee6264e4b6380f8f51805669617847aba01",
+        "src/metric.rs": "aad7024a2a65c8dfb2aea0301140b070e83a318772281c628dd590535313817f",
+        "src/parameters.rs": "d909a5d999f1ec1663f5f1d65c7b2a600c6e8119abbf9c161cb9bb0250fdb9a9",
+        "src/plane.rs": "79306781a4449c59cb8b6a48e75f80c488c129c2bc5c66b836444e4aeb214547",
+        "src/pyramid.rs": "f38ba4ee38d853c46792c7a8a622ef637b2fa79b9d516fd662692daef44f8ef7",
+        "src/temporal.rs": "85f9a15a4387e5d37713e2b827fa4fb17fd33c26179c7fd95a0ced2826abbb23",
+        "data/color_spaces.json": "30ce6752d35672d97a9d7fb7286170915a2ddfe4307782693f9ee176ef9491d1",
+        "data/csf_lut_weber_fixed_size.json": "df39c869c0c53a9a2cb757811ecaf4ce0d44b4151f5ff9590f5bfe1ede940c18",
+        "data/cvvdp_parameters.json": "ef4dedb44f11f33f509ea3d6d204bb23b03917259b8efbc077009ce53211762b",
+        "data/display_models.json": "653979727e809fcd9e44424aff2615d54edde026d9feb17d8f07b7f0ff61b517",
+        "parity/src/main.rs": "8b8a4b5fd3f47c529d9c7c8c79292d56a7c41cf244d0493403dae0ce020c8b01",
+        "parity/measure.py": "20474c3ba3012f1ccd1409ee3ca025d86fe1eb5fc229d710d6aa115339a070d8",
+        "parity/reference.py": "60f4bd884ad4f7dfca19808d7c621a45d4a5e43fa3d9477db4f2eb21b8de7619",
+        "parity/report.py": "73b02669b63168d29467fc1909b4c7442bbc7abfee74726ecfe3fc4e2fca8888",
+        "parity/sweep_report.py": "5ee095a4ebf14ffbcf14a9fdff0abaa5dadd4637e1ad977cd4997285c81589eb",
+        "parity/benchmark.sh": "968e88f9d2c9d3057e6d0f82de938e4b91b85ef815517211eee64df726ddb22b",
+        "parity/run.sh": "2ec050e312d8fc8b17393560e8ac0a62d18472537cc452e4ed81826839339e39",
+        "parity/sweep.sh": "63ca07cccd61e8a2e1e52acb38a2479a6aff8d096ba1b65f6a92e5ddbeced217"
+      },
+      "binary_sha256": "221505218f84d539ddf8e9d34a96bc2c9a90ed66ca050b379296c1e7c19d4b17",
+      "compiler": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+      "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)",
+      "hardware": {
+        "cpu": "AMD Ryzen 9 7945HX with Radeon Graphics",
+        "logical_cpus": 32,
+        "os": "Linux 7.0.0-28-generic x86_64",
+        "physical_cores": 16,
+        "ram_gib": 30
+      },
+      "build_command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--release",
+        "--manifest-path",
+        "parity/Cargo.toml",
+        "--no-default-features"
+      ],
+      "build_environment": {
+        "RUSTFLAGS": null,
+        "CARGO_ENCODED_RUSTFLAGS": null,
+        "CARGO_BUILD_TARGET": null,
+        "CARGO_BUILD_RUSTFLAGS": null,
+        "CARGO_PROFILE_RELEASE_OPT_LEVEL": null,
+        "CARGO_PROFILE_RELEASE_LTO": null,
+        "CARGO_PROFILE_RELEASE_CODEGEN_UNITS": null,
+        "RAYON_NUM_THREADS": "16",
+        "RUSTC_WRAPPER": null,
+        "RUSTC_WORKSPACE_WRAPPER": null
+      },
+      "cargo_config_sha256": {
+        "ancestor-2/config.toml": "cf790593d749bfabc6f494b7553c0be352ec9227c1e6d0579cee5ab9c22cd64a",
+        "cargo-home/config.toml": "cf790593d749bfabc6f494b7553c0be352ec9227c1e6d0579cee5ab9c22cd64a"
+      },
+      "execution_threads": 1,
+      "profile": "release",
+      "features": [],
+      "execution": "single",
+      "action": "benchmark",
+      "input_sha256": {
+        "1080p-image-reference.f32": "2fa9e1f96e861957c32dcf8e56c7cad9b7262852ab3bc65ae3572dbf10ca9c4e",
+        "1080p-image-test.f32": "a60b64a270b1170c6dea0a9fc3571dad1fdcf1ddbb2597c1851ed875aea1d359",
+        "1080p-video-8-frames-30fps-reference.f32": "ce81cdec62a81c8e7cdd270f1e8885bbee4a8afb383d766e94176f2d5a1306e2",
+        "1080p-video-8-frames-30fps-test.f32": "0465b9d05bdde41d5dc0ae04021cffe80345aeaf1b8ad9c14fa6f39942ee4889",
+        "manifest.json": "9737ca93afa8ec273d67e786114c91fc1c15fd67488690d1657c12cf09325e27"
+      },
+      "started_utc": "2026-10-02T01:13:47Z",
+      "output_sha256": {
+        "benchmark-rust-SingleThread.json": "66886675cde17ad311d16897f4793a2e00910e3821e56d1ae6127ec55b1f7a6c"
+      }
+    },
+    "benchmark_parallel": {
+      "source_sha256": "2df15cef44eb16ce57fd5ffd75203695571a77745a1f8416b0a1320bb02365a2",
+      "files_sha256": {
+        "Cargo.toml": "eac134d08b4e6f80311264d7103f0fc833f7c4f091d6f44ef019c9b2d5bfceb2",
+        "Cargo.lock": "14b52d5a8cb9695db498df402b43f130bf61f19b60b4cb0c4348aa6d8c908e40",
+        "parity/Cargo.toml": "6808dc247bf2d8f5ce4f7956d05a5d474561edad0941d12a8868333e4d35a88e",
+        "parity/Cargo.lock": "d03943a7ed57448dde967e35ec272586da51802e1f9e24306a227f872b5b8393",
+        "src/allocation.rs": "cb4098b9b8309fa99cb12facca7564741cec4b9d02586c0a385d69bf6b0cbd4e",
+        "src/color.rs": "6c7b485a634308d5b6078f70364cd1836db558e29c8df4a897cf1fea15f41437",
+        "src/csf.rs": "c974931e75194e2f19977393fc812aa4ece85041f62f484527aca63d98e88fce",
+        "src/display.rs": "ac19a151deff9dc6aee356b52aa119a0a5473c3ea79640c03a52efb9f4dd1074",
+        "src/error.rs": "90f04d905eec4b2bae3e826468ad12e285698b98eaffa07f96c793443f3d24e7",
+        "src/image.rs": "a67d9d6f09011c05b33ce95abf22350cb9dbd36a51f64ee76cb614ab652845f1",
+        "src/lib.rs": "be611efaefa599a5a3b2865a53645ee6264e4b6380f8f51805669617847aba01",
+        "src/metric.rs": "aad7024a2a65c8dfb2aea0301140b070e83a318772281c628dd590535313817f",
+        "src/parameters.rs": "d909a5d999f1ec1663f5f1d65c7b2a600c6e8119abbf9c161cb9bb0250fdb9a9",
+        "src/plane.rs": "79306781a4449c59cb8b6a48e75f80c488c129c2bc5c66b836444e4aeb214547",
+        "src/pyramid.rs": "f38ba4ee38d853c46792c7a8a622ef637b2fa79b9d516fd662692daef44f8ef7",
+        "src/temporal.rs": "85f9a15a4387e5d37713e2b827fa4fb17fd33c26179c7fd95a0ced2826abbb23",
+        "data/color_spaces.json": "30ce6752d35672d97a9d7fb7286170915a2ddfe4307782693f9ee176ef9491d1",
+        "data/csf_lut_weber_fixed_size.json": "df39c869c0c53a9a2cb757811ecaf4ce0d44b4151f5ff9590f5bfe1ede940c18",
+        "data/cvvdp_parameters.json": "ef4dedb44f11f33f509ea3d6d204bb23b03917259b8efbc077009ce53211762b",
+        "data/display_models.json": "653979727e809fcd9e44424aff2615d54edde026d9feb17d8f07b7f0ff61b517",
+        "parity/src/main.rs": "8b8a4b5fd3f47c529d9c7c8c79292d56a7c41cf244d0493403dae0ce020c8b01",
+        "parity/measure.py": "20474c3ba3012f1ccd1409ee3ca025d86fe1eb5fc229d710d6aa115339a070d8",
+        "parity/reference.py": "60f4bd884ad4f7dfca19808d7c621a45d4a5e43fa3d9477db4f2eb21b8de7619",
+        "parity/report.py": "73b02669b63168d29467fc1909b4c7442bbc7abfee74726ecfe3fc4e2fca8888",
+        "parity/sweep_report.py": "5ee095a4ebf14ffbcf14a9fdff0abaa5dadd4637e1ad977cd4997285c81589eb",
+        "parity/benchmark.sh": "968e88f9d2c9d3057e6d0f82de938e4b91b85ef815517211eee64df726ddb22b",
+        "parity/run.sh": "2ec050e312d8fc8b17393560e8ac0a62d18472537cc452e4ed81826839339e39",
+        "parity/sweep.sh": "63ca07cccd61e8a2e1e52acb38a2479a6aff8d096ba1b65f6a92e5ddbeced217"
+      },
+      "binary_sha256": "848cc8da4ac20b7e35f9e216e23b0a5d1b11a946d8f50d18736e01054b8038cd",
+      "compiler": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+      "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)",
+      "hardware": {
+        "cpu": "AMD Ryzen 9 7945HX with Radeon Graphics",
+        "logical_cpus": 32,
+        "os": "Linux 7.0.0-28-generic x86_64",
+        "physical_cores": 16,
+        "ram_gib": 30
+      },
+      "build_command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--release",
+        "--manifest-path",
+        "parity/Cargo.toml"
+      ],
+      "build_environment": {
+        "RUSTFLAGS": null,
+        "CARGO_ENCODED_RUSTFLAGS": null,
+        "CARGO_BUILD_TARGET": null,
+        "CARGO_BUILD_RUSTFLAGS": null,
+        "CARGO_PROFILE_RELEASE_OPT_LEVEL": null,
+        "CARGO_PROFILE_RELEASE_LTO": null,
+        "CARGO_PROFILE_RELEASE_CODEGEN_UNITS": null,
+        "RAYON_NUM_THREADS": "16",
+        "RUSTC_WRAPPER": null,
+        "RUSTC_WORKSPACE_WRAPPER": null
+      },
+      "cargo_config_sha256": {
+        "ancestor-2/config.toml": "cf790593d749bfabc6f494b7553c0be352ec9227c1e6d0579cee5ab9c22cd64a",
+        "cargo-home/config.toml": "cf790593d749bfabc6f494b7553c0be352ec9227c1e6d0579cee5ab9c22cd64a"
+      },
+      "execution_threads": 16,
+      "profile": "release",
+      "features": [
+        "parallel"
+      ],
+      "execution": "parallel",
+      "action": "benchmark",
+      "input_sha256": {
+        "1080p-image-reference.f32": "2fa9e1f96e861957c32dcf8e56c7cad9b7262852ab3bc65ae3572dbf10ca9c4e",
+        "1080p-image-test.f32": "a60b64a270b1170c6dea0a9fc3571dad1fdcf1ddbb2597c1851ed875aea1d359",
+        "1080p-video-8-frames-30fps-reference.f32": "ce81cdec62a81c8e7cdd270f1e8885bbee4a8afb383d766e94176f2d5a1306e2",
+        "1080p-video-8-frames-30fps-test.f32": "0465b9d05bdde41d5dc0ae04021cffe80345aeaf1b8ad9c14fa6f39942ee4889",
+        "manifest.json": "9737ca93afa8ec273d67e786114c91fc1c15fd67488690d1657c12cf09325e27"
+      },
+      "started_utc": "2026-10-02T01:15:29Z",
+      "output_sha256": {
+        "benchmark-rust-Parallel.json": "3add6474e763b841c526a00c8b872c9ab7d94b71305b8a00b2f000ea4a2a7464"
+      }
+    }
+  }
 }

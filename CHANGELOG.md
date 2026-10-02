@@ -6,6 +6,12 @@ crate follows [Semantic Versioning](https://semver.org/).
 
 ## [0.1.0] - Unreleased
 
+### Changed
+
+- Refreshed performance records and the README benchmark chart with the
+  2026-10-02 measurements after hardening, including Rust source and executable
+  identities and the slower multi-threaded image result.
+
 ### Added
 
 - Checked byte layouts, fallible prediction buffers and a configurable 1 GiB

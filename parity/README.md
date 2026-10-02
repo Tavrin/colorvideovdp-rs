@@ -44,9 +44,12 @@ frequencies, ordered features and maps. `measure.py` captures SHA-256 identities
 for Rust sources, lockfiles, build configuration, executable, inputs and outputs,
 plus compiler and hardware metadata before execution; it rejects changes during
 the run. Reports read that captured metadata and verify artifact hashes, so old
-results cannot be relabelled as measurements of a changed checkout. Existing
-`MEASURED_PERFORMANCE.md` and `MEASURED_RESULTS.json` are explicitly historical
-pre-hardening records without Rust provenance.
+results cannot be relabelled as measurements of a changed checkout.
+`MEASURED_PERFORMANCE.md` and the benchmark fields in `MEASURED_RESULTS.json`
+contain the 2026-10-02 measurements of the current implementation, with Rust
+source and executable identities. The JSON's parity fields retain the previous
+record: full `record` regeneration was blocked because the available corpus
+and benchmark source snapshots differ in `Cargo.toml`. The corpus was not rerun.
 
 ## Corpus
 

@@ -195,8 +195,8 @@ def chart():
             out.append(f'<text x="{left + w + 6:.1f}" y="{y + bar - 3}">{ms / 1000:.2f} s</text>')
     axis_y = top + len(rows) * (group_h + group_gap) - group_gap + 6
     out.append(f'<line class="axis" x1="{left}" y1="{top - 4}" x2="{left}" y2="{axis_y}"/>')
-    out.append(f'<text class="muted" x="0" y="{height - 8}">Measured before the hardening '
-               "changes; not re-measured since. Data: parity/MEASURED_PERFORMANCE.md</text>")
+    out.append(f'<text class="muted" x="0" y="{height - 8}">Measured 2026-10-02 after hardening. '
+               "Data: parity/MEASURED_PERFORMANCE.md</text>")
     out.append("</svg>")
     (IMG / "benchmarks.svg").write_text("\n".join(out) + "\n")
 

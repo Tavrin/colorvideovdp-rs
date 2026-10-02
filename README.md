@@ -30,9 +30,8 @@ compare two images with the WebAssembly build. Images stay on your machine.
   that ship with the reference, or on a custom display.
 - Matches the PyTorch reference to within 0.00000286 JOD on a 150-case corpus
   and 0.00001383 JOD on a 500-case randomized sweep ([details](#parity)).
-- On one CPU thread, a 1080p image took 1.15 s against 4.51 s for PyTorch on
-  CPU, in measurements taken before the 0.1.0 hardening changes
-  ([details](#performance)).
+- Single-thread speedup over PyTorch on CPU: about 5.7× on the image
+  workload and 2.8× on video ([details](#performance)).
 - Builds for `wasm32-unknown-unknown`, and runs in the browser.
 - No `unsafe` code; invalid input and oversized work return errors.
 
@@ -89,9 +88,9 @@ high-fps cases; see the [sweep report](https://github.com/Tavrin/colorvideovdp-r
 
 ## Performance
 
-The following figures are historical measurements from before hardening. They
-were recorded without Rust source or binary identities and do not qualify the
-current implementation. New measurements capture both identities at execution.
+Measured on 2026-10-02 with the current implementation after hardening. Rust
+source and executable SHA-256 identities were captured at execution and are
+stored with the samples in [the measurement record](parity/MEASURED_RESULTS.json).
 
 Measured on an AMD Ryzen 9 7945HX (16 cores, 32 threads), 30 GiB RAM,
 Linux x86_64; Rust 1.98.1 release build; PyTorch 2.14.1+cpu, Python 3.12.3.
@@ -105,15 +104,19 @@ Single thread:
 
 | 1080p workload | Rust (ms) | PyTorch CPU (ms) | PyTorch / Rust |
 | --- | ---: | ---: | ---: |
-| Image, noise | 1149.94 | 4513.44 | 3.9× |
-| Video, 8 frames at 30 fps, flicker | 11494.68 | 32677.17 | 2.8× |
+| Image, noise | 944.35 | 5414.94 | 5.7× |
+| Video, 8 frames at 30 fps, flicker | 11245.95 | 32015.98 | 2.8× |
 
 Multi-threaded (16 Rayon workers; 16 PyTorch intra-op threads):
 
 | 1080p workload | Rust (ms) | PyTorch CPU (ms) |
 | --- | ---: | ---: |
-| Image, noise | 194.53 | 809.62 |
-| Video, 8 frames at 30 fps, flicker | 2086.01 | 9201.24 |
+| Image, noise | 336.02 | 851.73 |
+| Video, 8 frames at 30 fps, flicker | 3411.55 | 9510.78 |
+
+Both multi-threaded Rust medians are slower than in the earlier
+pre-hardening measurement (194.53 ms for the image, 2086.01 ms for video).
+Single-thread times did not regress.
 
 The reference is designed to run on a CUDA GPU; its CPU path is not the
 authors' intended configuration. A GPU PyTorch run would be much faster than

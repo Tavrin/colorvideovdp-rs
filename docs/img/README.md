@@ -28,8 +28,9 @@ yellow) with a ramp that approximates the Magma colour map; larger values are
 clipped. The WebP figures are lossy (quality 90), so the pixels are close to,
 but not exactly, the crate's output.
 
-The benchmark figures were recorded before the hardening changes in 0.1.0 and
-have not been re-measured; `parity/MEASURED_PERFORMANCE.md` says the same.
+The benchmark chart uses the 2026-10-02 measurements of the current
+implementation after hardening, from `parity/MEASURED_PERFORMANCE.md`. Rust
+source and executable identities are stored in `parity/MEASURED_RESULTS.json`.
 
 ## Regenerating
 
