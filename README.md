@@ -13,7 +13,7 @@ at revision `2a268bc`. It is an independent port, not affiliated with the
 original authors or the Graphics and Displays group at the University of
 Cambridge.
 
-![Reference, test and ColorVideoVDP distortion map of a procedural scene](https://raw.githubusercontent.com/Tavrin/colorvideovdp-rs/main/docs/img/hero.webp)
+![Reference, test and ColorVideoVDP distortion map of a procedural scene](docs/img/hero.webp)
 
 *Reference, test (noise in the sky, blur on the ground) and the distortion map
 computed by this crate for a 24-inch 1920 × 1080 display viewed from 0.6 m.
@@ -99,7 +99,7 @@ Inputs are 1920 × 1080 f32 buffers, identical for both implementations, with
 distortion maps off. Each figure is the median of three predictions after one
 warm-up.
 
-![Bar chart of the timings below](https://raw.githubusercontent.com/Tavrin/colorvideovdp-rs/main/docs/img/benchmarks.svg)
+![Bar chart of the timings below](docs/img/benchmarks.svg)
 
 Single thread:
 
@@ -129,7 +129,7 @@ stronger distortion, and very strong distortions can go below 0. A difference
 of 1 JOD between two conditions means that 75% of observers would choose the
 one with the higher score.
 
-![The same scene with noise, blur, blocking and a colour shift at three strengths, each labelled with its JOD score](https://raw.githubusercontent.com/Tavrin/colorvideovdp-rs/main/docs/img/jod-levels.webp)
+![The same scene with noise, blur, blocking and a colour shift at three strengths, each labelled with its JOD score](docs/img/jod-levels.webp)
 
 *Four distortions at three strengths each, scored by this crate on the same
 display as above. Blocking keeps each 8 × 8 block's mean and quantizes the
@@ -138,7 +138,7 @@ deviations from it; "flat blocks" keeps only the mean.*
 For video, the temporal channels respond to changes between frames. Here the
 test sequence flickers by ±3% in brightness on alternate frames:
 
-![Reference frames, flickering test frames and the per-frame distortion map](https://raw.githubusercontent.com/Tavrin/colorvideovdp-rs/main/docs/img/video-strip.webp)
+![Reference frames, flickering test frames and the per-frame distortion map](docs/img/video-strip.webp)
 
 The figures are made by `examples/showcase.rs` and
 [`docs/img/generate.py`](docs/img/README.md).
