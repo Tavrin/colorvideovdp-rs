@@ -45,11 +45,12 @@ for Rust sources, lockfiles, build configuration, executable, inputs and outputs
 plus compiler and hardware metadata before execution; it rejects changes during
 the run. Reports read that captured metadata and verify artifact hashes, so old
 results cannot be relabelled as measurements of a changed checkout.
-`MEASURED_PERFORMANCE.md` and the benchmark fields in `MEASURED_RESULTS.json`
-contain the 2026-10-02 measurements of the current implementation, with Rust
-source and executable identities. The JSON's parity fields retain the previous
-record: full `record` regeneration was blocked because the available corpus
-and benchmark source snapshots differ in `Cargo.toml`. The corpus was not rerun.
+`MEASURED_PERFORMANCE.md` and `MEASURED_RESULTS.json` contain fresh corpus and
+benchmark measurements of 0.1.1 using the same source snapshot. The parallel
+investigation, interleaved before/after samples, load conditions, stage timing
+breakdowns and full-output identity proof are in `PARALLEL_PERFORMANCE.md` and
+`PARALLEL_PERFORMANCE.json`. No profiler instrumentation is included in the
+library. The recorded benchmark figures use `CVVDP_REPEATS=5`.
 
 ## Corpus
 

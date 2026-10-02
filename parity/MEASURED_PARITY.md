@@ -1,14 +1,14 @@
 # Qualified corpus parity
 
-Rust source/configuration SHA-256: `9c412490fde1c6881f0f5a3d284b3f150afdfc2c01b60d1aabf6494c00855443`.
-Single-thread executable SHA-256: `221505218f84d539ddf8e9d34a96bc2c9a90ed66ca050b379296c1e7c19d4b17`.
-Parallel executable SHA-256: `848cc8da4ac20b7e35f9e216e23b0a5d1b11a946d8f50d18736e01054b8038cd`.
+Rust source/configuration SHA-256: `da57d5b48dc566fd6eda45833634a520de83b94208d854386453621b3a5e81b7`.
+Single-thread executable SHA-256: `d3ca16a4943be331471bbdb7d870e0bd3dd5417a16824daeec040f47ac9afd4e`.
+Parallel executable SHA-256: `f58d0d0568d20d4c134eff9acd5eb47343d3472be016f3b7e843adc851609bb4`.
 
 150 cases pass with unchanged original maxima. Features and spatial frequencies
 also pass their gates, and every serialized prediction byte matches between
-the two execution modes. `HARDENING_RESULTS.json` binds these results and the
-500-case sweep to execution-time source, compiler, configuration, input and
-output identities.
+the two execution modes. `MEASURED_RESULTS.json` binds these results to
+execution-time source, compiler, configuration, input and output identities.
+The separate 500-case sweep is summarized in `results/sweep.md`.
 
 | Corpus | Cases | Max absolute JOD error | Max raw map error | Max map error before f16 |
 | --- | ---: | ---: | ---: | ---: |

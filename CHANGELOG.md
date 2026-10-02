@@ -4,7 +4,20 @@ All notable changes to this crate are documented in this file. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the
 crate follows [Semantic Versioning](https://semver.org/).
 
-## [0.1.0] - Unreleased
+## [0.1.1] - Unreleased
+
+### Changed
+
+- Keep parallel predictions inside the current Rayon pool, reuse consumed
+  masking buffers, and parallelize spatial pooling powers while retaining the
+  original sequential f64 sum order. No public API or numerical model changes.
+- Preserve typed errors, checked memory limits and fallible allocations, with
+  bit-identical complete predictions before and after in both feature modes.
+- Refresh performance records, README figures and the benchmark chart from
+  five-repeat measurements; record stage profiles and before/after identity
+  checks for the fixed corpus, randomized sweep and 1080p benchmark inputs.
+
+## [0.1.0] - 2026-10-02
 
 ### Changed
 
@@ -45,4 +58,5 @@ crate follows [Semantic Versioning](https://semver.org/).
   unpublished harness that checks 150 cases against reference revision
   `2a268bc` (maximum JOD error 0.00000286).
 
+[0.1.1]: https://github.com/Tavrin/colorvideovdp-rs/compare/v0.1.0...HEAD
 [0.1.0]: https://github.com/Tavrin/colorvideovdp-rs/releases/tag/v0.1.0

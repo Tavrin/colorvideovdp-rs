@@ -4,9 +4,9 @@ PASS: 500 cases; NumPy PCG64 seed 20261002.
 
 Reference: ColorVideoVDP 0.5.7, revision 2a268bc; PyTorch 2.14.1+cpu, CPU, 1 thread(s).
 
-Rust source/configuration SHA-256: `9c412490fde1c6881f0f5a3d284b3f150afdfc2c01b60d1aabf6494c00855443`.
-Single-thread binary SHA-256: `221505218f84d539ddf8e9d34a96bc2c9a90ed66ca050b379296c1e7c19d4b17`.
-Parallel binary SHA-256: `848cc8da4ac20b7e35f9e216e23b0a5d1b11a946d8f50d18736e01054b8038cd`.
+Rust source/configuration SHA-256: `da57d5b48dc566fd6eda45833634a520de83b94208d854386453621b3a5e81b7`.
+Single-thread binary SHA-256: `d3ca16a4943be331471bbdb7d870e0bd3dd5417a16824daeec040f47ac9afd4e`.
+Parallel binary SHA-256: `f58d0d0568d20d4c134eff9acd5eb47343d3472be016f3b7e843adc851609bb4`.
 
 | Corpus | Cases | Max absolute JOD error | Max raw map error | Max map error before f16 |
 | --- | ---: | ---: | ---: | ---: |

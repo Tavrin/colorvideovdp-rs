@@ -249,6 +249,22 @@ impl Cvvdp {
         fps: f32,
         color: Color,
     ) -> Result<Prediction> {
+        // Enter the current pool once: each spatial pass then forks locally,
+        // rather than handing work back and forth from an external caller.
+        #[cfg(feature = "parallel")]
+        if self.parallel() {
+            return rayon::scope(|_| self.predict_inner(test, reference, fps, color));
+        }
+        self.predict_inner(test, reference, fps, color)
+    }
+
+    fn predict_inner(
+        &self,
+        test: &[Image],
+        reference: &[Image],
+        fps: f32,
+        color: Color,
+    ) -> Result<Prediction> {
         let first = test.first().ok_or(Error::EmptySequence)?;
         if test.len() != reference.len()
             || test.iter().chain(reference).any(|x| !x.same_shape(first))
@@ -460,7 +476,7 @@ impl Cvvdp {
                         * correction
                 })
             }))?;
-            let differences = if baseband {
+            let mut differences = if baseband {
                 collect((0..channels).map(|c| {
                     Plane::generate(w, h, self.parallel(), |x, y| {
                         let i = y * w + x;
@@ -469,17 +485,13 @@ impl Cvvdp {
                     })
                 }))?
             } else {
-                self.mask(&contrasts, &sensitivity)?
+                self.mask(contrasts, &sensitivity)?
             };
             if differences
                 .iter()
                 .any(|d: &Plane| d.data.iter().any(|v| !v.is_finite()))
             {
                 return Err(Error::NumericalFailure);
-            }
-            for c in 0..channels {
-                qualities[c * tables.len() + band] =
-                    norm(differences[c].data.iter().copied(), p.beta, w * h);
             }
             if self.options.distortion_map {
                 let weights = p.channel_weights();
@@ -498,6 +510,11 @@ impl Cvvdp {
                     );
                     d / gain
                 })?);
+            }
+            // Maps consume the original differences before pooling reuses them.
+            for c in 0..channels {
+                qualities[c * tables.len() + band] =
+                    differences[c].norm_in_place(p.beta, self.parallel());
             }
             gaussian = next;
         }
@@ -521,17 +538,19 @@ impl Cvvdp {
     }
 
     // cvvdp_metric.py: apply_masking_model (mult-mutual), phase_uncertainty, mask_pool, clamp_diffs.
-    fn mask(&self, contrasts: &[Plane], sensitivity: &[Plane]) -> Result<Vec<Plane>> {
+    fn mask(&self, contrasts: Vec<Plane>, sensitivity: &[Plane]) -> Result<Vec<Plane>> {
         let p = &self.parameters;
         let (w, h) = (contrasts[0].w, contrasts[0].h);
         let channels = sensitivity.len();
         let gains = [1.0, 1.45, 1.0, 1.0];
-        let normalized: Vec<Plane> = collect(contrasts.iter().enumerate().map(|(c, v)| {
-            Plane::generate(w, h, self.parallel(), |x, y| {
-                let i = y * w + x;
-                v.data[i] * sensitivity[c / 2].data[i] * gains[c / 2]
-            })
-        }))?;
+        // These contrasts are no longer needed after normalization. Reuse their
+        // fallibly allocated storage instead of serially zeroing new planes.
+        let mut normalized = contrasts;
+        for (c, plane) in normalized.iter_mut().enumerate() {
+            plane.map_in_place(self.parallel(), |x, y, value| {
+                value * sensitivity[c / 2].data[y * w + x] * gains[c / 2]
+            });
+        }
         let mask_scale = 10.0_f32.powf(p.mask_c);
         let masking: Vec<Plane> = collect((0..channels).map(|c| {
             let mutual = Plane::generate(w, h, self.parallel(), |x, y| {
@@ -540,27 +559,32 @@ impl Cvvdp {
                     .abs()
                     .min(normalized[2 * c + 1].data[i].abs())
             })?;
-            let mutual = if w > self.blur_kernel.len() / 2 && h > self.blur_kernel.len() / 2 {
+            let mut mutual = if w > self.blur_kernel.len() / 2 && h > self.blur_kernel.len() / 2 {
                 blur(&mutual, &self.blur_kernel, self.parallel())?
             } else {
                 mutual
             };
-            Plane::generate(w, h, self.parallel(), |x, y| {
-                safe_pow((mutual.data[y * w + x] * mask_scale).abs(), p.mask_q[c])
-            })
+            mutual.map_in_place(self.parallel(), |_, _, value| {
+                safe_pow((value * mask_scale).abs(), p.mask_q[c])
+            });
+            Ok(mutual)
         }))?;
         let max_d = 10.0_f32.powf(p.d_max);
+        let mut pairs = normalized.into_iter();
         collect((0..channels).map(|c| {
-            Plane::generate(w, h, self.parallel(), |x, y| {
+            let mut test = pairs.next().ok_or(Error::NumericalFailure)?;
+            let reference = pairs.next().ok_or(Error::NumericalFailure)?;
+            test.map_in_place(self.parallel(), |x, y, value| {
                 let i = y * w + x;
                 let mut m = 0.0;
                 for (source, mask) in masking.iter().enumerate() {
                     m += mask.data[i] * self.xcm[source * 4 + c];
                 }
-                let diff = (normalized[2 * c].data[i] - normalized[2 * c + 1].data[i]).abs();
+                let diff = (value - reference.data[i]).abs();
                 let d = safe_pow(diff, p.mask_p) / (1.0 + m);
                 max_d * d / (max_d + d)
-            })
+            });
+            Ok(test)
         }))
     }
 }

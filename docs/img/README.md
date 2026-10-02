@@ -29,7 +29,7 @@ clipped. The WebP figures are lossy (quality 90), so the pixels are close to,
 but not exactly, the crate's output.
 
 The benchmark chart uses the 2026-10-02 measurements of the current
-implementation after hardening, from `parity/MEASURED_PERFORMANCE.md`. Rust
+0.1.1 implementation, from `parity/MEASURED_PERFORMANCE.md`. Rust
 source and executable identities are stored in `parity/MEASURED_RESULTS.json`.
 
 ## Regenerating

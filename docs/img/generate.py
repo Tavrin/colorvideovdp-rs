@@ -11,6 +11,7 @@ colours the maps and draws the benchmark chart from
 `parity/MEASURED_PERFORMANCE.md`.
 """
 
+import json
 import re
 import subprocess
 import tempfile
@@ -159,6 +160,8 @@ def performance():
 
 def chart():
     rows = performance()
+    record = json.loads((ROOT / "parity" / "MEASURED_RESULTS.json").read_text())
+    repeats = record["benchmark_repetitions"]
     series = [("PyTorch CPU", "bar-py"), ("colorvideovdp", "bar-rs")]
     left, right, bar, gap, group_gap, plot_w, top = 150, 110, 14, 3, 18, 420, 70
     group_h = 2 * bar + gap
@@ -176,7 +179,7 @@ def chart():
         "</style>",
         '<text x="0" y="16" font-size="14" font-weight="600">'
         "Time per 1920×1080 prediction, relative to PyTorch on CPU (shorter is faster)</text>",
-        '<text class="muted" x="0" y="34">Median of 3 runs, AMD Ryzen 9 7945HX, no distortion '
+        f'<text class="muted" x="0" y="34">Median of {repeats} runs, AMD Ryzen 9 7945HX, no distortion '
         "map. Video: 8 frames at 30 fps.</text>",
     ]
     x = left
@@ -195,7 +198,7 @@ def chart():
             out.append(f'<text x="{left + w + 6:.1f}" y="{y + bar - 3}">{ms / 1000:.2f} s</text>')
     axis_y = top + len(rows) * (group_h + group_gap) - group_gap + 6
     out.append(f'<line class="axis" x1="{left}" y1="{top - 4}" x2="{left}" y2="{axis_y}"/>')
-    out.append(f'<text class="muted" x="0" y="{height - 8}">Measured 2026-10-02 after hardening. '
+    out.append(f'<text class="muted" x="0" y="{height - 8}">Measured 2026-10-02, colorvideovdp 0.1.1. '
                "Data: parity/MEASURED_PERFORMANCE.md</text>")
     out.append("</svg>")
     (IMG / "benchmarks.svg").write_text("\n".join(out) + "\n")
