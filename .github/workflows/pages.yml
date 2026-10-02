@@ -1,0 +1,70 @@
+# Builds the browser demo in examples/web/ and deploys it to GitHub Pages.
+#
+# Inactive until Pages is set up. To enable it:
+#   1. Settings > Pages > Build and deployment > Source: "GitHub Actions".
+#   2. Settings > Secrets and variables > Actions > Variables: add a
+#      repository variable PAGES_ENABLED with the value "true".
+# Until then, pushes to main skip both jobs. A manual run (workflow_dispatch)
+# builds the site but skips the deploy job unless PAGES_ENABLED is set.
+# GitHub Pages on a private repository needs a paid plan.
+
+name: Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+env:
+  CARGO_TERM_COLOR: always
+  # Must equal the wasm-bindgen version in examples/web/Cargo.lock; the build checks it.
+  WASM_BINDGEN_VERSION: 0.2.114
+
+jobs:
+  build:
+    if: github.event_name == 'workflow_dispatch' || vars.PAGES_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - name: Check wasm-bindgen version against Cargo.lock
+        run: |
+          locked=$(awk '$0 == "name = \"wasm-bindgen\"" { getline; gsub(/"/, "", $3); print $3 }' examples/web/Cargo.lock)
+          if [ "$locked" != "$WASM_BINDGEN_VERSION" ]; then
+            echo "examples/web/Cargo.lock has wasm-bindgen $locked; update WASM_BINDGEN_VERSION in pages.yml" >&2
+            exit 1
+          fi
+      - name: Install wasm-bindgen CLI
+        run: cargo install wasm-bindgen-cli --version "$WASM_BINDGEN_VERSION" --locked
+      - name: Build
+        run: |
+          cargo build --locked --release --target wasm32-unknown-unknown --manifest-path examples/web/Cargo.toml
+          mkdir -p _site
+          cp examples/web/index.html examples/web/sample-reference.png examples/web/sample-test.png _site/
+          wasm-bindgen --target web --out-dir _site/pkg examples/web/target/wasm32-unknown-unknown/release/colorvideovdp_web.wasm
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    if: vars.PAGES_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

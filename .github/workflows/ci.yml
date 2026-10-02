@@ -18,6 +18,7 @@ jobs:
           components: rustfmt, clippy
       - run: cargo fmt --check
       - run: cargo fmt --check --manifest-path parity/Cargo.toml
+      - run: cargo fmt --check --manifest-path examples/web/Cargo.toml
       - run: cargo clippy --all-targets --all-features --locked -- -D warnings
       - run: cargo clippy --all-targets --no-default-features --locked -- -D warnings
       - run: cargo clippy --all-targets --manifest-path parity/Cargo.toml --locked -- -D warnings
@@ -41,7 +42,9 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: wasm32-unknown-unknown
+          components: clippy
       - run: cargo build --target wasm32-unknown-unknown --no-default-features --locked
+      - run: cargo clippy --target wasm32-unknown-unknown --manifest-path examples/web/Cargo.toml --locked -- -D warnings
 
   msrv:
     runs-on: ubuntu-latest

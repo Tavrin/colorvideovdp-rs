@@ -6,3 +6,5 @@
 /fuzz/artifacts/
 /fuzz/corpus/
 __pycache__/
+/examples/web/target/
+/examples/web/pkg/

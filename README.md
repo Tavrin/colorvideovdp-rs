@@ -1,7 +1,9 @@
 # colorvideovdp
 
-[![Version](https://img.shields.io/badge/version-0.1.0_unreleased-blue)](CHANGELOG.md)
+[![crates.io](https://img.shields.io/crates/v/colorvideovdp.svg)](https://crates.io/crates/colorvideovdp)
+[![docs.rs](https://docs.rs/colorvideovdp/badge.svg)](https://docs.rs/colorvideovdp)
 [![CI](https://github.com/Tavrin/colorvideovdp-rs/actions/workflows/ci.yml/badge.svg)](https://github.com/Tavrin/colorvideovdp-rs/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/crates/l/colorvideovdp.svg)](LICENSE)
 
 A pure-Rust port of ColorVideoVDP, the full-reference image and video quality
 metric by Mantiuk et al. (SIGGRAPH 2024). The authors call the metric `cvvdp`.
@@ -11,7 +13,49 @@ at revision `2a268bc`. It is an independent port, not affiliated with the
 original authors or the Graphics and Displays group at the University of
 Cambridge.
 
-Version 0.1.0 is unreleased. Build API documentation locally with `cargo doc --all-features`.
+![Reference, test and ColorVideoVDP distortion map of a procedural scene](https://raw.githubusercontent.com/Tavrin/colorvideovdp-rs/main/docs/img/hero.webp)
+
+*Reference, test (noise in the sky, blur on the ground) and the distortion map
+computed by this crate for a 24-inch 1920 × 1080 display viewed from 0.6 m.
+The test scores 7.83 JOD; brighter map pixels mean a more visible difference.*
+
+**[Try it in your browser](https://tavrin.github.io/colorvideovdp-rs/)**:
+compare two images with the WebAssembly build. Images stay on your machine.
+
+## Why colorvideovdp
+
+- A Rust implementation of ColorVideoVDP: no Python or PyTorch, one library
+  that links into a Rust program or a single binary.
+- Images and video, SDR and HDR (PQ, HLG, linear), on the 26 display models
+  that ship with the reference, or on a custom display.
+- Matches the PyTorch reference to within 0.00000286 JOD on a 150-case corpus
+  and 0.00001383 JOD on a 500-case randomized sweep ([details](#parity)).
+- On one CPU thread, a 1080p image took 1.15 s against 4.51 s for PyTorch on
+  CPU, in measurements taken before the 0.1.0 hardening changes
+  ([details](#performance)).
+- Builds for `wasm32-unknown-unknown`, and runs in the browser.
+- No `unsafe` code; invalid input and oversized work return errors.
+
+## Alternatives
+
+- **[ColorVideoVDP](https://github.com/gfxdisp/ColorVideoVDP)** (PyTorch,
+  `pip install cvvdp`) is the reference implementation by the metric's
+  authors. Use it for GPU execution, batch evaluation from Python, video
+  file input, the ML-based variants, colourized heatmaps and distograms,
+  none of which this crate provides.
+- **[FLIP](https://github.com/NVlabs/flip)** (Rust port:
+  [flip-rs](https://crates.io/crates/flip-rs)) maps the difference a viewer
+  sees when flipping between two rendered images. Use it for per-pixel error
+  maps in rendering work; it has no temporal model and no JOD scale.
+- **SSIM** ([dssim](https://crates.io/crates/dssim)) is a structural
+  similarity score for images. Use it for image compression comparisons where
+  display and viewing conditions do not matter.
+- **[Butteraugli](https://crates.io/crates/butteraugli)** estimates
+  perceived differences between images, and is used to tune JPEG XL and
+  Guetzli. Use it for still-image codec work.
+- **[VMAF](https://github.com/Netflix/vmaf)** predicts video quality for
+  streaming encodes from features learned on viewer scores. Use it to compare
+  encoder settings on SDR video, where it is widely used.
 
 ## Parity
 
@@ -55,6 +99,8 @@ Inputs are 1920 × 1080 f32 buffers, identical for both implementations, with
 distortion maps off. Each figure is the median of three predictions after one
 warm-up.
 
+![Bar chart of the timings below](https://raw.githubusercontent.com/Tavrin/colorvideovdp-rs/main/docs/img/benchmarks.svg)
+
 Single thread:
 
 | 1080p workload | Rust (ms) | PyTorch CPU (ms) | PyTorch / Rust |
@@ -82,6 +128,20 @@ ColorVideoVDP reports quality in Just-Objectionable-Difference (JOD) units.
 stronger distortion, and very strong distortions can go below 0. A difference
 of 1 JOD between two conditions means that 75% of observers would choose the
 one with the higher score.
+
+![The same scene with noise, blur, blocking and a colour shift at three strengths, each labelled with its JOD score](https://raw.githubusercontent.com/Tavrin/colorvideovdp-rs/main/docs/img/jod-levels.webp)
+
+*Four distortions at three strengths each, scored by this crate on the same
+display as above. Blocking keeps each 8 × 8 block's mean and quantizes the
+deviations from it; "flat blocks" keeps only the mean.*
+
+For video, the temporal channels respond to changes between frames. Here the
+test sequence flickers by ±3% in brightness on alternate frames:
+
+![Reference frames, flickering test frames and the per-frame distortion map](https://raw.githubusercontent.com/Tavrin/colorvideovdp-rs/main/docs/img/video-strip.webp)
+
+The figures are made by `examples/showcase.rs` and
+[`docs/img/generate.py`](docs/img/README.md).
 
 ## Usage
 
@@ -187,6 +247,22 @@ cargo build --target wasm32-unknown-unknown --no-default-features
 cargo run --example image
 ```
 
+### Browser demo
+
+`examples/web/` is a separate, unpublished package with the wasm-bindgen
+bindings for the browser demo. To build and serve it locally, with
+`wasm-bindgen-cli` at the version in `examples/web/Cargo.lock`:
+
+```sh
+cargo build --release --target wasm32-unknown-unknown --manifest-path examples/web/Cargo.toml
+wasm-bindgen --target web --out-dir examples/web/pkg \
+    examples/web/target/wasm32-unknown-unknown/release/colorvideovdp_web.wasm
+python3 -m http.server --directory examples/web
+```
+
+The demo reads images as 8-bit sRGB on one thread. Its scores are not covered
+by the parity records, which test native builds.
+
 The minimum supported Rust version is 1.85. The tests include three small
 fixtures produced by the reference, so they run without Python. The full parity
 corpus and the benchmarks are reproduced with the unpublished harness in
@@ -210,6 +286,24 @@ metric in research:
 > Chapiro. ColorVideoVDP: A visual difference predictor for image, video and
 > display distortions. In SIGGRAPH 2024 Technical Papers, Article 129.
 > <https://doi.org/10.1145/3658144>
+
+```bibtex
+@article{mantiuk2024colorvideovdp,
+  author  = {Mantiuk, Rafa{\l} K. and Hanji, Param and Ashraf, Maliha and
+             Asano, Yuta and Chapiro, Alexandre},
+  title   = {{ColorVideoVDP}: A visual difference predictor for image, video
+             and display distortions},
+  journal = {ACM Transactions on Graphics},
+  volume  = {43},
+  number  = {4},
+  articleno = {129},
+  year    = {2024},
+  doi     = {10.1145/3658144}
+}
+```
+
+The project page is
+<https://www.cl.cam.ac.uk/research/rainbow/projects/colorvideovdp/>.
 
 This project is not affiliated with or endorsed by the authors or the
 University of Cambridge.

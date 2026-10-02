@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>colorvideovdp: ColorVideoVDP in the browser</title>
+<link rel="icon" href="data:,">
+<style>
+  :root{font-family:system-ui,sans-serif;color:#edeef5;background:#15151d}
+  body{max-width:1100px;margin:40px auto;padding:0 16px}
+  h1{font-size:30px;margin:0 0 8px}
+  p{color:#b5b7c8;line-height:1.6;margin:8px 0}
+  a{color:#d7a6ff}
+  .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:24px 0 12px}
+  .panel{border:1px dashed #74768c;border-radius:10px;padding:12px;min-width:0}
+  .panel.over{background:#292b40}
+  .panel h2{font-size:15px;margin:0 0 8px;font-weight:600}
+  .panel img,.panel canvas{display:block;width:100%;height:auto;border-radius:6px;background:#0d0d12;min-height:60px}
+  .panel input{max-width:100%;margin-top:10px;font-size:13px;color:#b5b7c8}
+  .heat{border-style:solid}
+  .legend{display:flex;align-items:center;gap:8px;font-size:12px;color:#b5b7c8;margin-top:10px}
+  .legend canvas{flex:1;height:10px;min-height:0;border-radius:3px}
+  .controls{display:flex;flex-wrap:wrap;align-items:center;gap:16px}
+  #jod{font-variant-numeric:tabular-nums;color:#edeef5;font-size:20px;font-weight:600}
+  #status{min-height:24px;color:#ddd0ed}
+  @media(max-width:760px){.grid{grid-template-columns:1fr}}
+</style>
+<h1>ColorVideoVDP in the browser</h1>
+<p>ColorVideoVDP predicts how visible the differences between a test image
+and a reference are, in Just-Objectionable-Difference (JOD) units: 10 means
+no visible difference, and lower is worse. This page runs the
+<a href="https://github.com/Tavrin/colorvideovdp-rs">colorvideovdp</a> crate
+compiled to WebAssembly on one thread; images never leave your machine. Drop or
+choose two images of equal size. They are read as sRGB, and alpha is ignored.</p>
+<div class="grid">
+  <div class="panel" id="reference"><h2>Reference</h2><img alt="Reference image"><input type="file" accept="image/*" aria-label="Choose reference image"></div>
+  <div class="panel" id="test"><h2>Test</h2><img alt="Test image"><input type="file" accept="image/*" aria-label="Choose test image"></div>
+  <div class="panel heat"><h2>Distortion map</h2><canvas id="heatmap" aria-label="Distortion map"></canvas>
+    <div class="legend"><span>JOD 10</span><canvas id="legend" width="256" height="1" aria-hidden="true"></canvas><span>JOD 5</span></div></div>
+</div>
+<div class="controls">
+  <label>Display <select id="display">
+    <option value="standard_fhd" selected>24-inch 1920 × 1080, 200 cd/m², 0.6 m (standard_fhd)</option>
+    <option value="standard_4k">30-inch 3840 × 2160, 200 cd/m², 0.75 m (standard_4k)</option>
+    <option value="sdr_fhd_24">24-inch 1920 × 1080, 100 cd/m², 0.6 m (sdr_fhd_24)</option>
+    <option value="standard_phone">6-inch phone, 500 cd/m², 0.4 m (standard_phone)</option>
+  </select></label>
+  <span id="jod" role="status"></span>
+</div>
+<p id="status">Loading WebAssembly…</p>
+<p>Each image pixel is shown as one display pixel, so the display choice sets
+the viewing distance in pixels per degree. The map shows the per-pixel
+difference from 10 JOD (black) to 5 JOD or worse (light yellow). The sample
+pair is procedural: the test image has noise in the sky and blur on the
+ground. Results match the native crate up to floating-point differences
+between targets; the parity records cover native builds only.</p>
+<script type="module">
+import init, { compare as cvvdp } from './pkg/colorvideovdp_web.js';
+
+// Nine anchors approximating the Magma colour map, as in docs/img/generate.py.
+const MAGMA = [[0,0,4],[28,16,68],[79,18,123],[129,37,129],[181,54,122],[229,80,100],[251,135,97],[254,194,135],[252,253,191]];
+const MAP_MAX = 0.5;
+function colour(v) {
+  const t = Math.min(1, Math.max(0, v / MAP_MAX)) * (MAGMA.length - 1);
+  const i = Math.min(Math.floor(t), MAGMA.length - 2), f = t - i;
+  return MAGMA[i].map((a, c) => Math.round(a * (1 - f) + MAGMA[i + 1][c] * f));
+}
+
+const status = document.querySelector('#status');
+const jod = document.querySelector('#jod');
+const display = document.querySelector('#display');
+const images = {};
+let ready = false;
+
+const legend = document.querySelector('#legend').getContext('2d');
+const strip = legend.createImageData(256, 1);
+for (let i = 0; i < 256; i++) { colour(i / 255 * MAP_MAX).forEach((v, c) => strip.data[i * 4 + c] = v); strip.data[i * 4 + 3] = 255; }
+legend.putImageData(strip, 0, 0);
+
+async function load(name, blob) {
+  if (!blob) return;
+  try {
+    const bitmap = await createImageBitmap(blob, {premultiplyAlpha: 'none', colorSpaceConversion: 'default'});
+    const canvas = document.createElement('canvas');
+    canvas.width = bitmap.width; canvas.height = bitmap.height;
+    const ctx = canvas.getContext('2d', {willReadFrequently: true});
+    ctx.drawImage(bitmap, 0, 0);
+    images[name] = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    bitmap.close();
+    document.querySelector(`#${name} img`).src = canvas.toDataURL();
+    await run();
+  } catch (e) { status.textContent = `Could not load image: ${e.message}`; }
+}
+
+async function run() {
+  const r = images.reference, t = images.test;
+  if (!ready || !r || !t) return;
+  if (r.width !== t.width || r.height !== t.height) {
+    status.textContent = `Images must have equal dimensions (reference ${r.width} × ${r.height}, test ${t.width} × ${t.height}).`;
+    jod.textContent = '';
+    return;
+  }
+  status.textContent = 'Computing…';
+  await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+  try {
+    const start = performance.now();
+    const result = cvvdp(r.data, t.data, r.width, r.height, display.value);
+    const elapsed = performance.now() - start;
+    const map = result.map;
+    const canvas = document.querySelector('#heatmap');
+    canvas.width = r.width; canvas.height = r.height;
+    const ctx = canvas.getContext('2d'), output = ctx.createImageData(r.width, r.height);
+    map.forEach((v, i) => { colour(v).forEach((x, c) => output.data[i * 4 + c] = x); output.data[i * 4 + 3] = 255; });
+    ctx.putImageData(output, 0, 0);
+    jod.textContent = `${result.jod.toFixed(2)} JOD`;
+    result.free();
+    status.textContent = `${r.width} × ${r.height}, computed in ${elapsed.toFixed(0)} ms.`;
+  } catch (e) { status.textContent = e.message || String(e); jod.textContent = ''; }
+}
+
+for (const name of ['reference', 'test']) {
+  const box = document.getElementById(name);
+  box.querySelector('input').addEventListener('change', e => load(name, e.target.files[0]));
+  box.addEventListener('dragover', e => { e.preventDefault(); box.classList.add('over'); });
+  box.addEventListener('dragleave', () => box.classList.remove('over'));
+  box.addEventListener('drop', e => { e.preventDefault(); box.classList.remove('over'); load(name, e.dataTransfer.files[0]); });
+}
+display.addEventListener('change', run);
+
+try {
+  await init();
+  ready = true;
+  status.textContent = 'Loading the sample pair…';
+  const fetchBlob = async url => { const res = await fetch(url); if (!res.ok) throw Error(`${url}: ${res.status}`); return res.blob(); };
+  const [reference, test] = await Promise.all([fetchBlob('sample-reference.png'), fetchBlob('sample-test.png')]);
+  await load('reference', reference);
+  await load('test', test);
+} catch (e) {
+  status.textContent = ready ? `Could not load the sample pair: ${e.message}` : `Build pkg/ first (see the README): ${e.message}`;
+}
+</script>
+</html>
